@@ -18,12 +18,12 @@ Option:
 }
 
 struct Config {
-    pid: nrpeek::Pid,
+    peek: Option<nrpeek::Peek>,
 }
 
 impl Config {
     fn new() -> Self {
-        Self { pid: nrpeek::getpid() }
+        Self { peek: None }
     }
 }
 
@@ -42,8 +42,8 @@ fn parse_opt_cb<T: Fn(&mut Config, &str)>(config: &mut Config, value: &str, args
     }
 }
 
-fn set_output(config: &mut Config, value: &str) {
-    config.pid = value.parse::<nrpeek::Pid>().unwrap();
+fn set_pid(config: &mut Config, value: &str) {
+    config.peek = Some(nrpeek::Peek::new_with_pid(value.parse::<nrpeek::Pid>().unwrap()));
 }
 
 fn parse_opt() -> Config {
@@ -54,7 +54,7 @@ fn parse_opt() -> Config {
         let head = args.next().unwrap();
         if head == "-h" {
             print_usage(&bin);
-        } else if parse_opt_cb(&mut config, &head, &mut args, "-p", set_output) {
+        } else if parse_opt_cb(&mut config, &head, &mut args, "-p", set_pid) {
             continue;
         }
         print_usage(&bin);
@@ -62,8 +62,8 @@ fn parse_opt() -> Config {
     config
 }
 
-fn set_cbs(conf: &Config, calc: &mut nrmcalc::Calc) {
-    let peek = std::rc::Rc::new(nrpeek::Peek::new(conf.pid));
+fn set_cbs(peek: nrpeek::Peek, calc: &mut nrmcalc::Calc) {
+    let peek = std::rc::Rc::new(peek);
     let p = std::rc::Rc::clone(&peek);
     calc.set_sqr_bra_cb("", move |x| Some(p.as_ref().peek_data::<u32>(x as usize).ok()? as i64));
     let p = std::rc::Rc::clone(&peek);
@@ -79,7 +79,9 @@ fn set_cbs(conf: &Config, calc: &mut nrmcalc::Calc) {
 pub fn start() {
     let conf = parse_opt();
     let mut calc = nrmcalc::Calc::new();
-    set_cbs(&conf, &mut calc);
+    if conf.peek.is_some() {
+        set_cbs(conf.peek.unwrap(), &mut calc);
+    }
     loop {
         let Some(cmd) = readline() else {
             continue;
