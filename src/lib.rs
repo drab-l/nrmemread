@@ -1,7 +1,8 @@
-//#[cfg(target_os = "linux")]
-//use std::ffi::*;
-//#[cfg(target_os = "windows")]
-use std::{io::Write, env::Args};
+use std::env::Args;
+#[cfg(target_os = "linux")]
+use std::ffi::*;
+#[cfg(target_os = "windows")]
+use std::io::Write;
 
 fn print_usage(bin: &str) -> ! {
     println!(
@@ -93,37 +94,37 @@ pub fn start() {
     }
 }
 
-//#[cfg(target_os = "linux")]
-//mod c {
-//    use std::ffi::*;
-//    extern "C" {
-//        pub fn free(ptr: *mut c_void);
-//        pub fn add_history(string: *const c_char);
-//        pub fn readline(prompt: *const c_char) -> *const c_char;
-//    }
-//}
-//
-//#[cfg(target_os = "linux")]
-//pub fn readline() -> Option<String> {
-//    let prompt = "> \0".as_ptr().cast::<c_char>();
-//    let r = unsafe { c::readline(prompt) };
-//    if r.is_null() {
-//        None
-//    } else {
-//        let cmd = Some(unsafe { std::ffi::CStr::from_ptr(r) }.to_str().ok()?.to_owned());
-//        unsafe { c::free(r.cast_mut().cast::<c_void>()) };
-//        cmd
-//    }
-//}
-//
-//#[cfg(target_os = "linux")]
-//pub fn add_history(string: &str) {
-//    let string = string.to_owned() + "\0";
-//    let string = string.as_ptr().cast::<c_char>();
-//    unsafe { c::add_history(string) };
-//}
+#[cfg(target_os = "linux")]
+mod c {
+    use std::ffi::*;
+    extern "C" {
+        pub fn free(ptr: *mut c_void);
+        pub fn add_history(string: *const c_char);
+        pub fn readline(prompt: *const c_char) -> *const c_char;
+    }
+}
 
-//#[cfg(target_os = "windows")]
+#[cfg(target_os = "linux")]
+pub fn readline() -> Option<String> {
+    let prompt = "> \0".as_ptr().cast::<c_char>();
+    let r = unsafe { c::readline(prompt) };
+    if r.is_null() {
+        None
+    } else {
+        let cmd = Some(unsafe { std::ffi::CStr::from_ptr(r) }.to_str().ok()?.to_owned());
+        unsafe { c::free(r.cast_mut().cast::<c_void>()) };
+        cmd
+    }
+}
+
+#[cfg(target_os = "linux")]
+pub fn add_history(string: &str) {
+    let string = string.to_owned() + "\0";
+    let string = string.as_ptr().cast::<c_char>();
+    unsafe { c::add_history(string) };
+}
+
+#[cfg(target_os = "windows")]
 fn readline() -> Option<String> {
     std::io::stdout().write(b"> ").ok()?;
     std::io::stdout().flush().unwrap();
@@ -132,5 +133,5 @@ fn readline() -> Option<String> {
     Some(cmd)
 }
 
-//#[cfg(target_os = "windows")]
+#[cfg(target_os = "windows")]
 fn add_history(_string: &str) { }
