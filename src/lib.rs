@@ -130,6 +130,7 @@ fn readline() -> Option<String> {
     std::io::stdout().flush().unwrap();
     let mut cmd = String::new();
     std::io::stdin().read_line(&mut cmd).unwrap();
+    let cmd = cmd.trim_end_matches(['\r', '\n']).to_string();
     Some(cmd)
 }
 
