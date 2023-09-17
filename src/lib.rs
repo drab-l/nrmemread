@@ -46,11 +46,7 @@ fn parse_opt_cb<T: Fn(&mut Config, &str)>(config: &mut Config, value: &str, args
 }
 
 fn set_pid(config: &mut Config, value: &str) {
-    if value == "self" {
-        config.peek = Some(nrpeek::Peek::new_with_pid(nrpeek::get_current_id()));
-    } else {
-        config.peek = Some(nrpeek::Peek::new_with_pid(value.parse::<nrpeek::Pid>().unwrap()));
-    }
+    config.peek = Some(nrpeek::Peek::new_with_pid(value.parse::<nrpeek::Pid>().unwrap()));
 }
 
 fn parse_opt() -> Config {
@@ -107,6 +103,8 @@ pub fn start() {
     let mut calc = nrmcalc::Calc::new();
     if conf.peek.is_some() {
         set_cbs(conf.peek.unwrap(), &mut calc);
+    } else {
+        set_cbs(nrpeek::Peek::new_with_pid(nrpeek::get_current_id()), &mut calc);
     }
     loop {
         let Some(cmd) = readline() else {
