@@ -4,6 +4,8 @@ use std::ffi::*;
 #[cfg(target_os = "windows")]
 use std::io::Write;
 
+mod dump;
+
 fn print_usage(bin: &str) -> ! {
     println!(
         r#"process memory reader.
@@ -44,7 +46,11 @@ fn parse_opt_cb<T: Fn(&mut Config, &str)>(config: &mut Config, value: &str, args
 }
 
 fn set_pid(config: &mut Config, value: &str) {
-    config.peek = Some(nrpeek::Peek::new_with_pid(value.parse::<nrpeek::Pid>().unwrap()));
+    if value == "self" {
+        config.peek = Some(nrpeek::Peek::new_with_pid(nrpeek::get_current_id()));
+    } else {
+        config.peek = Some(nrpeek::Peek::new_with_pid(value.parse::<nrpeek::Pid>().unwrap()));
+    }
 }
 
 fn parse_opt() -> Config {
@@ -65,16 +71,35 @@ fn parse_opt() -> Config {
 
 fn set_cbs(peek: nrpeek::Peek, calc: &mut nrmcalc::Calc) {
     let peek = std::rc::Rc::new(peek);
-    let p = std::rc::Rc::clone(&peek);
-    calc.set_sqr_bra_cb("", move |x| Some(p.as_ref().peek_data::<u32>(x as usize).ok()? as i64));
-    let p = std::rc::Rc::clone(&peek);
-    calc.set_sqr_bra_cb("b", move |x| Some(p.as_ref().peek_data::<u8>(x as usize).ok()? as i64));
-    let p = std::rc::Rc::clone(&peek);
-    calc.set_sqr_bra_cb("w", move |x| Some(p.as_ref().peek_data::<u16>(x as usize).ok()? as i64));
-    let p = std::rc::Rc::clone(&peek);
-    calc.set_sqr_bra_cb("d", move |x| Some(p.as_ref().peek_data::<u32>(x as usize).ok()? as i64));
-    let p = std::rc::Rc::clone(&peek);
-    calc.set_sqr_bra_cb("q", move |x| Some(p.as_ref().peek_data::<u64>(x as usize).ok()? as i64));
+    macro_rules! set_peek_numeric {
+        ($name:literal, $t:ty) => {
+            let p = std::rc::Rc::clone(&peek);
+            calc.set_sqr_bra_cb($name, move |x|
+                Some(p.as_ref().peek_data::<$t>(x as usize).ok()? as i64));
+        };
+    }
+    set_peek_numeric!("", u32);
+    set_peek_numeric!("b", u8);
+    set_peek_numeric!("w", u16);
+    set_peek_numeric!("d", u32);
+    set_peek_numeric!("q", u64);
+
+    macro_rules! set_dump {
+        ($name:literal, $func:ident) => {
+            let p = std::rc::Rc::clone(&peek);
+            calc.set_custom1_cb($name, move |size,addr| {
+                dump::$func(p.as_ref(), addr as usize, size as usize);
+                None
+            });
+        };
+    }
+    set_dump!("be2", dump_be2);
+    set_dump!("le2", dump_le2);
+    set_dump!("be4", dump_be4);
+    set_dump!("le4", dump_le4);
+    set_dump!("be8", dump_be8);
+    set_dump!("le8", dump_le8);
+    set_dump!("dump", dump_be16);
 }
 
 pub fn start() {
