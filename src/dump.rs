@@ -224,7 +224,7 @@ mod test {
     fn test_dump_be4_short() {
         let _lock =  LOG_TEST.lock();
         let p = Peek::new_with_pid(get_current_id());
-        let s: [u32; 2] = [0x34333231, 0x38373635];
+        let s: [u32; 2] = [0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
             format!(r#"Adress          : +0+1+2+3 +4+5+6+7 +8+9+A+B +C+D+E+F 0123456789ABCDEF
@@ -246,7 +246,7 @@ mod test {
     fn test_dump_be16_long() {
         let _lock =  LOG_TEST.lock();
         let p = Peek::new_with_pid(get_current_id());
-        let s: [u32; 8] = [0x34333231, 0x38373635, 0x64636261, 0x68676665, 0x34333231, 0x38373635, 0x34333231, 0x38373635];
+        let s: [u32; 8] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
             format!(r#"Adress          : +0+1+2+3+4+5+6+7+8+9+A+B+C+D+E+F 0123456789ABCDEF
@@ -270,7 +270,7 @@ mod test {
     fn test_dump_be8_long() {
         let _lock =  LOG_TEST.lock();
         let p = Peek::new_with_pid(get_current_id());
-        let s: [u32; 6] = [0x34333231, 0x38373635, 0x64636261, 0x68676665, 0x34333231, 0x38373635];
+        let s: [u32; 6] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
             format!(r#"Adress          : +0+1+2+3+4+5+6+7 +8+9+A+B+C+D+E+F 0123456789ABCDEF
@@ -294,7 +294,7 @@ mod test {
     fn test_dump_le8_long() {
         let _lock =  LOG_TEST.lock();
         let p = Peek::new_with_pid(get_current_id());
-        let s: [u32; 6] = [u32::swap_bytes(0x34333231), u32::swap_bytes(0x38373635), u32::swap_bytes(0x64636261), u32::swap_bytes(0x68676665), u32::swap_bytes(0x34333231), u32::swap_bytes(0x38373635)];
+        let s: [u32; 6] = [0x34333231u32.to_be(), 0x38373635u32.to_be(), 0x64636261u32.to_be(), 0x68676665u32.to_be(), 0x34333231u32.to_be(), 0x38373635u32.to_be()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
             format!(r#"Adress          : +7+6+5+4+3+2+1+0 +F+E+D+C+B+A+9+8 0123456789ABCDEF
@@ -318,7 +318,7 @@ mod test {
     fn test_dump_be4_long() {
         let _lock =  LOG_TEST.lock();
         let p = Peek::new_with_pid(get_current_id());
-        let s: [u32; 6] = [0x34333231, 0x38373635, 0x64636261, 0x68676665, 0x34333231, 0x38373635];
+        let s: [u32; 6] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
             format!(r#"Adress          : +0+1+2+3 +4+5+6+7 +8+9+A+B +C+D+E+F 0123456789ABCDEF
@@ -342,7 +342,7 @@ mod test {
     fn test_dump_le4_long() {
         let _lock =  LOG_TEST.lock();
         let p = Peek::new_with_pid(get_current_id());
-        let s: [u32; 6] = [u32::swap_bytes(0x34333231), u32::swap_bytes(0x38373635), u32::swap_bytes(0x64636261), u32::swap_bytes(0x68676665), u32::swap_bytes(0x34333231), u32::swap_bytes(0x38373635)];
+        let s: [u32; 6] = [0x34333231u32.to_be(), 0x38373635u32.to_be(), 0x64636261u32.to_be(), 0x68676665u32.to_be(), 0x34333231u32.to_be(), 0x38373635u32.to_be()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
             format!(r#"Adress          : +3+2+1+0 +7+6+5+4 +B+A+9+8 +F+E+D+C 0123456789ABCDEF
@@ -366,7 +366,7 @@ mod test {
     fn test_dump_be2_long() {
         let _lock =  LOG_TEST.lock();
         let p = Peek::new_with_pid(get_current_id());
-        let s: [u32; 6] = [0x34333231, 0x38373635, 0x64636261, 0x68676665, 0x34333231, 0x38373635];
+        let s: [u32; 6] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
             format!(r#"Adress          : +0+1 +2+3 +4+5 +6+7 +8+9 +A+B +C+D +E+F 0123456789ABCDEF
