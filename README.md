@@ -18,11 +18,11 @@ For syntax details, see https://github.com/drab-l/nrmcalc#readme
 
 |operator|associativity|description|
 |-------:|------------:|:----------|
-|[@q <i>address</i>]|-|load 8 byte from address as little endian|
-|[@d <i>address</i>]|-|load 4 byte from address as little endian|
-|[@w <i>address</i>]|-|load 2 byte from address as little endian|
-|[@b <i>address</i>]|-|load 1 byte from address as little endian|
-|[<i>address</i>]<br>[@ <i>address</i>]|-|load 4byte from address as little endian|
+|[@q <i>address</i>]|-|load 8 byte from address|
+|[@d <i>address</i>]|-|load 4 byte from address|
+|[@w <i>address</i>]|-|load 2 byte from address|
+|[@b <i>address</i>]|-|load 1 byte from address|
+|[<i>address</i>]<br>[@ <i>address</i>]|-|load 4byte from address|
 |(<i>explessoin</i>)|-|grouping|
 |<i>size</i> @dump <i>address</i><br>@be2,@le2,@be4,@le4,@be8,@le8|-|dump memory as string<br>dump memory each 2/4/8 byte as big/little endian|
 |*<br>/|left to right|multiplication<br>division|
