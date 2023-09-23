@@ -24,7 +24,7 @@ For syntax details, see https://github.com/drab-l/nrmcalc#readme
 |[@b <i>address</i>]|-|load 1 byte from address|
 |[<i>address</i>]<br>[@ <i>address</i>]|-|load 4byte from address|
 |(<i>explessoin</i>)|-|grouping|
-|<i>size</i> @dump <i>address</i><br>@be2,@le2,@be4,@le4,@be8,@le8|-|dump memory as string<br>dump memory each 2/4/8 byte as big/little endian|
+|<i>size</i> @dump <i>address</i><br>@be2,@le2,@be4,@le4,@be8,@le8|-|dump memory<br>dump memory each 2/4/8 byte as big/little endian|
 |*<br>/|left to right|multiplication<br>division|
 |+<br>-|left to right|addition<br>subtraction|
 |<<br><<br><=<br>>=|left to right|less than<br>greater than<br>less than or equal<br>greater than or equal|
