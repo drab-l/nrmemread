@@ -14,6 +14,7 @@ Usage:
     {} [Option]
 Option:
     -p: target process id, default is self.
+    -w: (only for windows) target process's window name.
 "#,
         bin
     );
@@ -46,7 +47,11 @@ fn parse_opt_cb<T: Fn(&mut Config, &str)>(config: &mut Config, value: &str, args
 }
 
 fn set_pid(config: &mut Config, value: &str) {
-    config.peek = Some(nrpeek::Peek::new_with_pid(value.parse::<nrpeek::Pid>().unwrap()));
+    config.peek = Some(nrpeek::Peek::new_with_pid(value.parse::<nrpeek::Pid>().unwrap()).unwrap());
+}
+
+fn set_window(config: &mut Config, value: &str) {
+    config.peek = Some(nrpeek::Peek::new_with_handle(nrpeek::get_handle_by_window_name(value).unwrap()).unwrap());
 }
 
 fn parse_opt() -> Config {
@@ -58,6 +63,8 @@ fn parse_opt() -> Config {
         if head == "-h" {
             print_usage(&bin);
         } else if parse_opt_cb(&mut config, &head, &mut args, "-p", set_pid) {
+            continue;
+        } else if parse_opt_cb(&mut config, &head, &mut args, "-w", set_window) {
             continue;
         }
         print_usage(&bin);
@@ -104,7 +111,7 @@ pub fn start() {
     if conf.peek.is_some() {
         set_cbs(conf.peek.unwrap(), &mut calc);
     } else {
-        set_cbs(nrpeek::Peek::new_with_pid(nrpeek::get_current_id()), &mut calc);
+        set_cbs(nrpeek::Peek::new_with_pid(nrpeek::get_current_id()).unwrap(), &mut calc);
     }
     loop {
         let Some(cmd) = readline() else {

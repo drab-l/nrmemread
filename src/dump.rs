@@ -223,7 +223,7 @@ mod test {
     #[test]
     fn test_dump_be4_short() {
         let _lock =  LOG_TEST.lock();
-        let p = Peek::new_with_pid(get_current_id());
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
         let s: [u32; 2] = [0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
@@ -245,7 +245,7 @@ mod test {
     #[test]
     fn test_dump_be16_long() {
         let _lock =  LOG_TEST.lock();
-        let p = Peek::new_with_pid(get_current_id());
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
         let s: [u32; 8] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
@@ -269,7 +269,7 @@ mod test {
     #[test]
     fn test_dump_be8_long() {
         let _lock =  LOG_TEST.lock();
-        let p = Peek::new_with_pid(get_current_id());
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
         let s: [u32; 6] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
@@ -293,7 +293,7 @@ mod test {
     #[test]
     fn test_dump_le8_long() {
         let _lock =  LOG_TEST.lock();
-        let p = Peek::new_with_pid(get_current_id());
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
         let s: [u32; 6] = [0x34333231u32.to_be(), 0x38373635u32.to_be(), 0x64636261u32.to_be(), 0x68676665u32.to_be(), 0x34333231u32.to_be(), 0x38373635u32.to_be()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
@@ -317,7 +317,7 @@ mod test {
     #[test]
     fn test_dump_be4_long() {
         let _lock =  LOG_TEST.lock();
-        let p = Peek::new_with_pid(get_current_id());
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
         let s: [u32; 6] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
@@ -341,7 +341,7 @@ mod test {
     #[test]
     fn test_dump_le4_long() {
         let _lock =  LOG_TEST.lock();
-        let p = Peek::new_with_pid(get_current_id());
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
         let s: [u32; 6] = [0x34333231u32.to_be(), 0x38373635u32.to_be(), 0x64636261u32.to_be(), 0x68676665u32.to_be(), 0x34333231u32.to_be(), 0x38373635u32.to_be()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
@@ -365,7 +365,7 @@ mod test {
     #[test]
     fn test_dump_be2_long() {
         let _lock =  LOG_TEST.lock();
-        let p = Peek::new_with_pid(get_current_id());
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
         let s: [u32; 6] = [0x34333231u32.to_le(), 0x38373635u32.to_le(), 0x64636261u32.to_le(), 0x68676665u32.to_le(), 0x34333231u32.to_le(), 0x38373635u32.to_le()];
         let ss = s.as_ptr() as usize;
         let e = if ss > u32::MAX as usize {
