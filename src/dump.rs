@@ -39,6 +39,7 @@ trait Endian {
     const HEADER_64: &'static str;
     type Type;
     const WIDTH: usize = std::mem::size_of::<Self::Type>();
+    const ALIGN: usize = std::mem::size_of::<Self::Type>();
     fn dump_number(x: Self::Type);
     fn dump_empty();
 }
@@ -121,10 +122,11 @@ impl Endian for Le8Byte {
     }
 }
 
-struct Be16Byte {}
-impl Endian for Be16Byte {
+struct Be16ByteNoAlign {}
+impl Endian for Be16ByteNoAlign {
     const HEADER_32: &'static str = "Adress  : +0+1+2+3+4+5+6+7+8+9+A+B+C+D+E+F 0123456789ABCDEF\n";
     const HEADER_64: &'static str = "Adress          : +0+1+2+3+4+5+6+7+8+9+A+B+C+D+E+F 0123456789ABCDEF\n";
+    const ALIGN: usize = 1;
     type Type = u128;
     fn dump_number(x: Self::Type) {
         log!(" {:032x}", x.to_be());
@@ -160,9 +162,9 @@ where T::Type: Copy
 fn dump_in<T: Endian>(peek: &nrpeek::Peek, addr: usize, size: usize) -> Option<()>
 where T::Type: Copy
 {
-    let mut addr = addr - (addr & (T::WIDTH - 1));
-    let mut size = size + (addr & (T::WIDTH - 1));
-    size = (size - 1 + T::WIDTH) & !(T::WIDTH - 1);
+    let mut addr = addr - (addr & (T::ALIGN - 1));
+    let mut size = size + (addr & (T::ALIGN - 1));
+    size = (size - 1 + T::ALIGN) & !(T::ALIGN - 1);
     size /= T::WIDTH;
     let mut buf = Vec::<T::Type>::with_capacity(size);
     peek.peek_vec2(addr, &mut buf).ok()?;
@@ -184,7 +186,7 @@ where T::Type: Copy
 }
 
 pub fn dump_be16(peek: &nrpeek::Peek, addr: usize, size: usize) {
-    dump_in::<Be16Byte>(peek, addr, size);
+    dump_in::<Be16ByteNoAlign>(peek, addr, size);
 }
 
 pub fn dump_be8(peek: &nrpeek::Peek, addr: usize, size: usize) {
@@ -240,6 +242,28 @@ mod test {
         let r = LOG.lock().unwrap().to_string();
         assert_eq!(r, e);
         *LOG.lock().unwrap() = "".to_string();
+    }
+
+    #[test]
+    fn test_dump_be16_noalign() {
+        let _lock =  LOG_TEST.lock();
+        let p = Peek::new_with_pid(get_current_id()).unwrap();
+        let s = "0123456789abcdef";
+        let ss = s.as_ptr() as usize;
+        let e = if ss > u32::MAX as usize {
+            format!(r#"Adress          : +0+1+2+3+4+5+6+7+8+9+A+B+C+D+E+F 0123456789ABCDEF
+{:016x}: 30313233343536373839616263646566 0123456789abcdef
+"#, ss)
+        } else {
+            format!(r#"Adress          : +0+1+2+3+4+5+6+7+8+9+A+B+C+D+E+F 0123456789ABCDEF
+{:08x}: 30313233343536373839616263646566 012345678abcdef
+"#, ss)
+        };
+        *LOG.lock().unwrap() = "".to_string();
+        dump_be16(&p, ss, s.len());
+        let r = LOG.lock().unwrap().to_string();
+        assert_eq!(r, e);
+        println!("{}", *LOG.lock().unwrap());
     }
 
     #[test]
