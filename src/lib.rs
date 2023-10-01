@@ -118,7 +118,11 @@ pub fn start() {
             continue;
         };
         add_history(&cmd);
-        if let Some(r) = calc.calc(&cmd) {
+        let cmd = cmd.trim();
+        if cmd == "exit" {
+            return
+        }
+        if let Some(r) = calc.calc(cmd) {
             println!("{}", r);
         }
     }
