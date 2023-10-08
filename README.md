@@ -8,6 +8,7 @@ usage:
 option:
 
     -p  <pid>: Target process ID, default is self.
+    -w  <name>: Target process's window name, only windows.
 
 syntax:
 
